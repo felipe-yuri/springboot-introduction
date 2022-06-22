@@ -1,13 +1,16 @@
-package br.com.sankhya.packagerepository.controllers;
+package br.com.sankhya.packagerepository.controllers.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
 import br.com.sankhya.packagerepository.models.Topico;
 import lombok.Getter;
-
 @Getter
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class TopicoDto {
 
 	private Long id;
@@ -25,5 +28,4 @@ public class TopicoDto {
 	public static List<TopicoDto> converter(List<Topico> topicos) {
 		return topicos.stream().map(TopicoDto::new).collect(Collectors.toList());
 	}
-
 }

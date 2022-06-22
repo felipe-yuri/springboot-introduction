@@ -18,11 +18,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @RequiredArgsConstructor
 @Entity
 @NoArgsConstructor
 @Getter
+@Setter
 @EqualsAndHashCode
 public class Topico {
 
