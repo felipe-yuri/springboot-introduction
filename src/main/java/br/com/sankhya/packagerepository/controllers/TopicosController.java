@@ -41,7 +41,7 @@ public class TopicosController {
 	private TopicoRepository topicoRepository;
 	@Autowired
 	private CursoRepository cursoRepository;
-
+	
 	@GetMapping
 	@Cacheable(value = "findAll")
 	public Page<TopicoDto> findAll(@RequestParam(required = false) String nomeCurso,

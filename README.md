@@ -94,6 +94,16 @@ Link para soluções do WebSecurityConfigurerAdapter deprecated
 
 https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
 ```
+- Para configurar a autenticação stateless no Spring Security, devemos utilizar o método sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+- Para disparar manualmente o processo de autenticação no Spring Security, devemos utilizar a classe AuthenticationManager;
+
+- Para poder injetar o AuthenticationManager no controller, devemos criar um método anotado com @Bean, na classe SecurityConfigurations, que retorna uma chamada ao método super.authenticationManager();
+
+- Para criar o token JWT, devemos utilizar a classe Jwts;
+O token tem um período de expiração, que pode ser definida no arquivo application.properties;
+
+- Para injetar uma propriedade do arquivo application.properties, devemos utilizar a anotação @Value.
 ## Dúvidas
 - DTO (Data Transfer Object) e o VO (Value Object) são a mesma coisa?
 - Diferença entre métodos Put e Patch? Put atualiza e sobreescreve tudo, já o Patch atualiza apenas uma parte?
