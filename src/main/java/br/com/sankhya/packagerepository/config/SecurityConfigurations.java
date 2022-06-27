@@ -18,6 +18,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import br.com.sankhya.packagerepository.repositories.UsuarioRepository;
+
 @EnableWebSecurity
 @Configuration
 public class SecurityConfigurations {
@@ -27,6 +29,9 @@ public class SecurityConfigurations {
 	
 	@Autowired
 	private TokenService tokenService;
+
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
 	@Bean
 	public PasswordEncoder passwordEncoder(){
@@ -63,7 +68,7 @@ public class SecurityConfigurations {
     	.anyRequest().authenticated()
     	.and().csrf().disable()
     	.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-    	.and().addFilterBefore(new AutenticacaoTokenFilter(tokenService), UsernamePasswordAuthenticationFilter.class);
+    	.and().addFilterBefore(new AutenticacaoTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
     	
         return http.build();
     }
