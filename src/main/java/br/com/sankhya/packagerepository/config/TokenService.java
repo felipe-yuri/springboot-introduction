@@ -3,7 +3,6 @@ package br.com.sankhya.packagerepository.config;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 
 import br.com.sankhya.packagerepository.models.Usuario;
@@ -30,6 +29,15 @@ public class TokenService {
 			.setExpiration(dataExpiracao)
 			.signWith(SignatureAlgorithm.HS256, secret)
 			.compact();
+	}
+
+	public boolean isTokenValido(String token) {
+		try {
+			Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 }
