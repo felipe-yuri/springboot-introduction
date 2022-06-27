@@ -7,10 +7,12 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,9 +43,10 @@ public class TopicosController {
 	private CursoRepository cursoRepository;
 
 	@GetMapping
-	public Page<TopicoDto> findAll(@RequestParam(required = false) String nomeCurso, @RequestParam int pagina,
-			@RequestParam int qtd, @RequestParam String ordenacao) {
-		Pageable paginacao = PageRequest.of(pagina, qtd, Direction.ASC, ordenacao);
+	@Cacheable(value = "findAll")
+	public Page<TopicoDto> findAll(@RequestParam(required = false) String nomeCurso,
+			@PageableDefault(sort = "dataCriacao", direction = Direction.DESC, page = 0, size = 2) Pageable paginacao) {
+		
 		Page<Topico> topicos = null;
 		if (nomeCurso == null) {
 			topicos = topicoRepository.findAll(paginacao);
@@ -54,17 +57,9 @@ public class TopicosController {
 		return TopicoDto.converter(topicos);
 	}
 
-	@PostMapping
-	@Transactional
-	public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder) {
-		Topico topico = form.converter(cursoRepository);
-		topicoRepository.save(topico);
-		URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
-		return ResponseEntity.created(uri).body(new TopicoDto(topico));
-	}
-
 	@GetMapping("/{id}")
-	public ResponseEntity<DetalhesDoTopicoDto> detalhar(@PathVariable Long id) {
+	@Cacheable(value = "detailsById")
+	public ResponseEntity<DetalhesDoTopicoDto> detailsById(@PathVariable Long id) {
 		Optional<Topico> topico = topicoRepository.findById(id);
 		if (topico.isPresent()) {
 			return ResponseEntity.ok(new DetalhesDoTopicoDto(topico.get()));
@@ -72,9 +67,20 @@ public class TopicosController {
 		return ResponseEntity.notFound().build();
 	}
 
+	@PostMapping
+	@Transactional
+	@CacheEvict(value = {"findAll", "detailsById"}, allEntries = true)
+	public ResponseEntity<TopicoDto> insert(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder) {
+		Topico topico = form.converter(cursoRepository);
+		topicoRepository.save(topico);
+		URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
+		return ResponseEntity.created(uri).body(new TopicoDto(topico));
+	}
+
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizarTopicoForm form) {
+	@CacheEvict(value = {"findAll", "detailsById"}, allEntries = true)
+	public ResponseEntity<TopicoDto> update(@PathVariable Long id, @RequestBody @Valid AtualizarTopicoForm form) {
 		Optional<Topico> optional = topicoRepository.findById(id);
 		if (optional.isPresent()) {
 			Topico topico = form.atualizar(id, topicoRepository);
@@ -85,7 +91,8 @@ public class TopicosController {
 
 	@DeleteMapping("/{id}")
 	@Transactional
-	public ResponseEntity<TopicoDto> remover(@PathVariable Long id) {
+	@CacheEvict(value = {"findAll", "detailsById"}, allEntries = true)
+	public ResponseEntity<TopicoDto> delete(@PathVariable Long id) {
 		Optional<Topico> optional = topicoRepository.findById(id);
 		if (optional.isPresent()) {
 			topicoRepository.deleteById(id);

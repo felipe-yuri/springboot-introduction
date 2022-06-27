@@ -65,6 +65,35 @@ Introdução ao springboot.
 - Para receber parâmetros dinâmicos no path da URL, devemos utilizar a anotação @PathVariable;
   
 - Para fazer o controle transacional automático, devemos utilizar a anotação @Transactional nos métodos do controller, ou seja, dessa forma é feito commit no banco após a execução sem erros/exceptions e a conexão com o banco é fechada.
+- Para criar paginação e ordenação de modo configurável deve-se utilizar a classe Pageable como no exemplo abaixo.
+```java
+Pageable paginacao = PageRequest.of(pagina, qtd, Direction.ASC, ordenacao);
+```
+- É possivel utilizar a paginação e ordenação de forma automática, sem a necessidade de utilizar a configuração do Pageable. Para isso, é necessário adicionar a notação @EnableSpringDataWebSupport na classe principal da aplicação, a mesma que contém a anotação @SpringBootApplication. Para consumir o endpoint com a paginação e ordenação deve utilizar o modelo abaixo:
+```json
+{{HOST}}/{{URL_API}}?page=1&size=2&sort=titulo,desc&&sort=id,asc
+```
+- É possível configurar o parametro default da ordenação e paginação nos parâmetros do método em questão.
+```java
+@PageableDefault(sort = "id", direction = Direction.ASC, page = 0, size = 2)
+```
+
+- É possível utilizar provedor de cache em memória para testes da aplicação ou setar um provedor para produção. Para isso, é necessário baixar a dependência e adicionar a anotação @EnableCaching na classe principal da aplicação. E adicionar a anotação @Cacheable(value = "findAll") no método onde queira guardar o retorno em cache.
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-cache</artifactId>
+</dependency>
+```
+
+- Para reiniciar o cache caso haja inserção ou update no banco, basta utilizar a anotação @CacheEvict(value = {"findAll", "detailsById"}, allEntries = true) nos métodos que devem disparar o reset do cache e passar um value com os apelidos dos caches.
+- Utilizar cache apenas em entidades que são pouco alteradas.
+```
+Link para soluções do WebSecurityConfigurerAdapter deprecated
+
+https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
+```
 ## Dúvidas
 - DTO (Data Transfer Object) e o VO (Value Object) são a mesma coisa?
 - Diferença entre métodos Put e Patch? Put atualiza e sobreescreve tudo, já o Patch atualiza apenas uma parte?
