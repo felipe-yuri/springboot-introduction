@@ -25,10 +25,10 @@ public class SecurityConfigurations {
 	PasswordEncoder passwordEncoder;
 	
 	@Autowired
-	private TokenService tokenService;
-
+	UsuarioRepository usuarioRepository;
+	
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	TokenService tokenService;
 
 	@Bean
 	public PasswordEncoder passwordEncoder(){
@@ -51,19 +51,19 @@ public class SecurityConfigurations {
         return new InMemoryUserDetailsManager(user);
     }
     
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    	http.authorizeRequests()
-    	.antMatchers("/h2-console/*").permitAll()
-    	.antMatchers("/auth").permitAll()
-    	.antMatchers("/topicos/**").permitAll()
-    	.anyRequest().authenticated()
-    	.and().csrf().disable()
-    	.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-    	.and().addFilterBefore(new AutenticacaoTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
-    	
-        return http.build();
-    }
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//    	http.authorizeRequests()
+//    	.antMatchers("/h2-console/*").permitAll()
+//    	.antMatchers("/auth").permitAll()
+//    	.antMatchers("/topicos/**").permitAll()
+//    	.anyRequest().authenticated()
+//    	.and().csrf().disable()
+//    	.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//    	.and().addFilterBefore(new AutenticacaoTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
+//    	
+//        return http.build();
+//    }
 //    @Bean
 //    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 //    	http.authorizeRequests()
@@ -75,15 +75,14 @@ public class SecurityConfigurations {
 //    	
 //    	return http.build();
 //    }
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//    	http.authorizeRequests()
-//    	.antMatchers("/h2-console/*").permitAll()
-//    	.anyRequest().authenticated()
-//    	.and().formLogin();
-//    	
-//    	return http.build();
-//    }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    	http.authorizeRequests()
+    	.antMatchers("/h2-console/*").permitAll()
+    	.anyRequest().authenticated().and().formLogin();
+    	
+    	return http.build();
+    }
     
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -92,6 +91,7 @@ public class SecurityConfigurations {
 				"/configuration/**",
         		"/**.html",
                 "/v2/api-docs/**",
+                "/v2/api-docs/swagger-config",
                 "/swagger-ui/**",
                 "/webjars/**",
                 "/swagger*/**",
