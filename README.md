@@ -106,10 +106,22 @@ O token tem um período de expiração, que pode ser definida no arquivo applica
 - Para injetar uma propriedade do arquivo application.properties, devemos utilizar a anotação @Value.
 
 - Para enviar o token JWT na requisição, é necessário adicionar o cabeçalho Authorization, passando como valor Bearer token;
+  
 - Para criar um filtro no Spring, devemos criar uma classe que herda da classe OncePerRequestFilter;
+  
 - Para recuperar o token JWT da requisição no filter, devemos chamar o método request.getHeader("Authorization");
+  
 - Para habilitar o filtro no Spring Security, devemos chamar o método and().addFilterBefore(new AutenticacaoViaTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+  
 - Para indicar ao Spring Security que o cliente está autenticado, devemos utilizar a classe SecurityContextHolder, chamando o método SecurityContextHolder.getContext().setAuthentication(authentication).
+
+- Na classe TokenService foi necessário colocar a anotação @Service. Na classe SecurityConfigurations foi necessário adicionar o método abaixo:
+```java
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+```
 ## Dúvidas
 - DTO (Data Transfer Object) e o VO (Value Object) são a mesma coisa?
 - Diferença entre métodos Put e Patch? Put atualiza e sobreescreve tudo, já o Patch atualiza apenas uma parte?
