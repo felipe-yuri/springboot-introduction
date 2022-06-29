@@ -36,23 +36,12 @@ public class SecurityConfigurations {
         return new InMemoryUserDetailsManager(user);
     }
     
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//    	http.authorizeRequests()
-//    	.antMatchers("/h2-console/*").permitAll()
-//    	.antMatchers("/auth").permitAll()
-//    	.anyRequest().authenticated()
-//    	.and().csrf().disable()
-//    	.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//    	
-//    	return http.build();
-//    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     	http.authorizeRequests()
     	.antMatchers("/h2-console/*").permitAll()
     	.antMatchers("/swagger*/**").permitAll()
-    	.anyRequest().authenticated();
+    	.antMatchers("/swagger-ui/**").permitAll();
     	
     	return http.build();
     }
